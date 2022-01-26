@@ -33,10 +33,7 @@ class KernelDetailsViewController: UIViewController{
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureRecognizerAction))
         view.addGestureRecognizer(panGesture)
         
-//        self.kernelTypePicker = UIPickerView(frame: CGRect(x: 0, y: 0, width:    view.frame.width - 260, height: 260))
-//        self.view.addSubview(kernelTypePicker)
-//        self.kernelTypePicker.delegate = self
-//        self.kernelTypePicker.dataSource = self
+       
         
         self.pickerData = ["item1","item2","item3","item4","item5"]
         
@@ -54,6 +51,7 @@ class KernelDetailsViewController: UIViewController{
     
     @IBAction func buttonSendData(_ sender: Any) {
         self.delegate?.getKernelDetails(kernel: 1, kernel: .c1)
+        self.dismiss(animated: true, completion: nil)
     }
     
     @objc private func panGestureRecognizerAction(sender: UIPanGestureRecognizer){

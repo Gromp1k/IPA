@@ -100,8 +100,6 @@ class MainViewController: UIViewController {
     }
     
     
-    
-    
     private func presentController(_ controller: OperationType.ControllerType){
         print("-Controller: \(controller)")
         switch controller{
@@ -121,14 +119,11 @@ class MainViewController: UIViewController {
             
         case .cellDetectionVC:
             guard let controller = storyboard?.instantiateViewController(withIdentifier: "KernelDetailsViewController") as? KernelDetailsViewController else{ return }
-            
             controller.transitioningDelegate = self
             controller.modalPresentationStyle = .custom
             controller.delegate = self
             self.kernelDetailsViewController = controller
-            present(controller,animated: true)
-            
-            
+            present(controller,animated: true) 
             break
             default:
                 break

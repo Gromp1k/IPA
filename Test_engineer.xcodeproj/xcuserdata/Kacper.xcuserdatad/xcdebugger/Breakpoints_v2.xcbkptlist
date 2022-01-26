@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "17A2FEE1-D957-49C7-9298-0015BCCDE070"
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "F97BDB2D-59B0-4BA4-8634-1DD682244F33"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Test_engineer/HamburgerViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "12"
+            endingLineNumber = "12"
+            landmarkName = "viewDidLoad()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "3698E0F7-EE9A-4D4D-814D-74FBE33C86CE"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Test_engineer/ViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "6"
+            endingLineNumber = "6"
+            landmarkName = "unknown"
+            landmarkType = "0">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "01FEB875-7D21-4BE4-8D4C-F9042AC54B73"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Test_engineer/ViewControllers/MainViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "29"
+            endingLineNumber = "29"
+            landmarkName = "MainViewController"
+            landmarkType = "3">
+            <Locations>
+               <Location
+                  uuid = "01FEB875-7D21-4BE4-8D4C-F9042AC54B73 - 4566f6e0b0e21804"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Test_engineer.MainViewController.isImageLoaded.getter : Swift.Bool"
+                  moduleName = "Test_engineer"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Kacper/Library/Mobile%20Documents/com~apple~CloudDocs/Engineer/Basics/Test_engineer/Test_engineer/ViewControllers/MainViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "28"
+                  endingLineNumber = "28"
+                  offsetFromSymbolStart = "84">
+               </Location>
+               <Location
+                  uuid = "01FEB875-7D21-4BE4-8D4C-F9042AC54B73 - b3d4bbe3d30253d8"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Test_engineer.MainViewController.isImageLoaded.setter : Swift.Bool"
+                  moduleName = "Test_engineer"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Kacper/Library/Mobile%20Documents/com~apple~CloudDocs/Engineer/Basics/Test_engineer/Test_engineer/ViewControllers/MainViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "28"
+                  endingLineNumber = "28"
+                  offsetFromSymbolStart = "112">
+               </Location>
+               <Location
+                  uuid = "01FEB875-7D21-4BE4-8D4C-F9042AC54B73 - f725ec93510159a9"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Test_engineer.MainViewController.isImageLoaded.modify : Swift.Bool"
+                  moduleName = "Test_engineer"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Kacper/Library/Mobile%20Documents/com~apple~CloudDocs/Engineer/Basics/Test_engineer/Test_engineer/ViewControllers/MainViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "20">
+               </Location>
+               <Location
+                  uuid = "01FEB875-7D21-4BE4-8D4C-F9042AC54B73 - e2b0e379cb34911a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Test_engineer.MainViewController.isImageLoaded.modify : Swift.Bool with unmangled suffix &quot;.resume.0&quot;"
+                  moduleName = "Test_engineer"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Kacper/Library/Mobile%20Documents/com~apple~CloudDocs/Engineer/Basics/Test_engineer/Test_engineer/ViewControllers/MainViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "28"
+                  endingLineNumber = "28"
+                  offsetFromSymbolStart = "16">
+               </Location>
+               <Location
+                  uuid = "01FEB875-7D21-4BE4-8D4C-F9042AC54B73 - cd1c633494fc7c92"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Test_engineer.MainViewController.init(nibName: Swift.Optional&lt;Swift.String&gt;, bundle: Swift.Optional&lt;__C.NSBundle&gt;) -&gt; Test_engineer.MainViewController"
+                  moduleName = "Test_engineer"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Kacper/Library/Mobile%20Documents/com~apple~CloudDocs/Engineer/Basics/Test_engineer/Test_engineer/ViewControllers/MainViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "28"
+                  endingLineNumber = "28"
+                  offsetFromSymbolStart = "448">
+               </Location>
+               <Location
+                  uuid = "01FEB875-7D21-4BE4-8D4C-F9042AC54B73 - 168ffc7bbaa189cd"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Test_engineer.MainViewController.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;Test_engineer.MainViewController&gt;"
+                  moduleName = "Test_engineer"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Kacper/Library/Mobile%20Documents/com~apple~CloudDocs/Engineer/Basics/Test_engineer/Test_engineer/ViewControllers/MainViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "28"
+                  endingLineNumber = "28"
+                  offsetFromSymbolStart = "424">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "4F33494F-D511-4314-84CA-774BAE88F1A0"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Test_engineer/ViewControllers/MainViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "126"
+            endingLineNumber = "126"
+            landmarkName = "presentController(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>

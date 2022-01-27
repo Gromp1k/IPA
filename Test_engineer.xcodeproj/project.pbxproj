@@ -10,6 +10,9 @@
 		E7149EB02798602C0092CAE0 /* ExpandingCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7149EAF2798602C0092CAE0 /* ExpandingCellModel.swift */; };
 		E7149EB427986F0C0092CAE0 /* OperationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7149EB327986F0C0092CAE0 /* OperationCell.swift */; };
 		E7149EB627986F3F0092CAE0 /* OperationCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7149EB527986F3F0092CAE0 /* OperationCellModel.swift */; };
+		E74D387227A2F16F00A19102 /* TresholdDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74D387127A2F16F00A19102 /* TresholdDetailsViewController.swift */; };
+		E74D387427A2F6A300A19102 /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E74D387327A2F6A300A19102 /* opencv2.framework */; };
+		E74D387727A2F6F300A19102 /* OpenCVWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = E74D387627A2F6F300A19102 /* OpenCVWrapper.mm */; };
 		E7770B43279F3D4B009B3D70 /* KernelDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7770B42279F3D4B009B3D70 /* KernelDetailsViewController.swift */; };
 		E7770B47279F424F009B3D70 /* PresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7770B46279F424F009B3D70 /* PresentationController.swift */; };
 		E77B2BE5279B3D4A0067A8C9 /* ImageSaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77B2BE4279B3D4A0067A8C9 /* ImageSaver.swift */; };
@@ -28,6 +31,12 @@
 		E7149EAF2798602C0092CAE0 /* ExpandingCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandingCellModel.swift; sourceTree = "<group>"; };
 		E7149EB327986F0C0092CAE0 /* OperationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationCell.swift; sourceTree = "<group>"; };
 		E7149EB527986F3F0092CAE0 /* OperationCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationCellModel.swift; sourceTree = "<group>"; };
+		E74D387127A2F16F00A19102 /* TresholdDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TresholdDetailsViewController.swift; sourceTree = "<group>"; };
+		E74D387327A2F6A300A19102 /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = opencv2.framework; sourceTree = "<group>"; };
+		E74D387527A2F6F300A19102 /* Test_engineer-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Test_engineer-Bridging-Header.h"; sourceTree = "<group>"; };
+		E74D387627A2F6F300A19102 /* OpenCVWrapper.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenCVWrapper.mm; sourceTree = "<group>"; };
+		E74D387827A2F70D00A19102 /* OpenCVWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenCVWrapper.h; sourceTree = "<group>"; };
+		E74D387927A2F7A100A19102 /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
 		E7770B42279F3D4B009B3D70 /* KernelDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KernelDetailsViewController.swift; sourceTree = "<group>"; };
 		E7770B46279F424F009B3D70 /* PresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationController.swift; sourceTree = "<group>"; };
 		E77B2BE4279B3D4A0067A8C9 /* ImageSaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSaver.swift; sourceTree = "<group>"; };
@@ -49,6 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E74D387427A2F6A300A19102 /* opencv2.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,6 +98,7 @@
 				E7800207279837CB0099021E /* SideMenuViewController.swift */,
 				E7FDAC1F279C770E002EEF51 /* LiveFeedViewController.swift */,
 				E7770B42279F3D4B009B3D70 /* KernelDetailsViewController.swift */,
+				E74D387127A2F16F00A19102 /* TresholdDetailsViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -95,8 +106,13 @@
 		E78001E32798211B0099021E = {
 			isa = PBXGroup;
 			children = (
+				E74D387927A2F7A100A19102 /* PrefixHeader.pch */,
+				E74D387827A2F70D00A19102 /* OpenCVWrapper.h */,
+				E74D387627A2F6F300A19102 /* OpenCVWrapper.mm */,
+				E74D387327A2F6A300A19102 /* opencv2.framework */,
 				E78001EE2798211B0099021E /* Test_engineer */,
 				E78001ED2798211B0099021E /* Products */,
+				E74D387527A2F6F300A19102 /* Test_engineer-Bridging-Header.h */,
 			);
 			sourceTree = "<group>";
 		};
@@ -208,8 +224,10 @@
 			files = (
 				E7FDAC20279C770E002EEF51 /* LiveFeedViewController.swift in Sources */,
 				E7800208279837CB0099021E /* SideMenuViewController.swift in Sources */,
+				E74D387727A2F6F300A19102 /* OpenCVWrapper.mm in Sources */,
 				E78001F42798211B0099021E /* MainViewController.swift in Sources */,
 				E780020A2798534E0099021E /* ExpandingCell.swift in Sources */,
+				E74D387227A2F16F00A19102 /* TresholdDetailsViewController.swift in Sources */,
 				E78001F02798211B0099021E /* AppDelegate.swift in Sources */,
 				E7770B43279F3D4B009B3D70 /* KernelDetailsViewController.swift in Sources */,
 				E77B2BE5279B3D4A0067A8C9 /* ImageSaver.swift in Sources */,
@@ -365,9 +383,16 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 68T5F3F5L4;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				GCC_PREFIX_HEADER = "${SRCROOT}/PrefixHeader.pch";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Test_engineer/Info.plist;
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Application want to save the image";
@@ -377,7 +402,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -386,6 +411,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.ios.basics.Test-engineer";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Test_engineer-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -398,9 +424,16 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 68T5F3F5L4;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				GCC_PREFIX_HEADER = "${SRCROOT}/PrefixHeader.pch";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Test_engineer/Info.plist;
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Application want to save the image";
@@ -410,7 +443,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -419,6 +452,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.ios.basics.Test-engineer";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Test_engineer-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};

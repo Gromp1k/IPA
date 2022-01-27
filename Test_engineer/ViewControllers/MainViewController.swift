@@ -100,10 +100,10 @@ class MainViewController: UIViewController {
     }
     
     
-    private func presentController(_ controller: OperationType.ControllerType){
+    private func presentController(_ controller: OperationTypes.ControllerTypes){
         print("-Controller: \(controller)")
         switch controller{
-            case .imagePickerVC:
+            case .IMAGE_PICKER_VC:
                 var config = PHPickerConfiguration()
                 config.filter = .images
                 config.selectionLimit = 1
@@ -113,11 +113,11 @@ class MainViewController: UIViewController {
                 present(picker, animated: true)
                 break
             
-        case .faceDetectionVC:
+        case .FACE_DETECTION_VC:
             guard let vc = storyboard?.instantiateViewController(withIdentifier: "LiveFeedViewController") as? LiveFeedViewController else{ return }
             present(vc,animated: true)
             
-        case .cellDetectionVC:
+        case .CELLS_DETECTION_VC:
             guard let controller = storyboard?.instantiateViewController(withIdentifier: "KernelDetailsViewController") as? KernelDetailsViewController else{ return }
             controller.transitioningDelegate = self
             controller.modalPresentationStyle = .custom
@@ -130,18 +130,34 @@ class MainViewController: UIViewController {
         }
     }
     
-    private func modifyImage(_ modification: OperationType.ModificationType){
+    private func modifyImage(_ modification: OperationTypes.ModificationTypes){
         print("-Modification: \(modification)")
-        switch modification{
-        case .saveImage:
-            if(self.isImageLoaded){
-                guard let imageToSave = self.presentedImage.image else {return}
-                let imageSaver = ImageSaver()
-                imageSaver.writeToPhotoAlbum(image: imageToSave)
+        if(self.isImageLoaded){
+            guard let image = self.presentedImage.image else {return}
+            switch modification{
+            case .SAVE_IMAGE_TO_FILE:
+                
+                    let imageSaver = ImageSaver()
+                    imageSaver.writeToPhotoAlbum(image: image)
+                
+                break
+            case .DELETE_PRESENTED_IMAGE: break
+             //   self.presentedImage.image = Wrapper.
+            case .GRAYSCALE:
+                self.presentedImage.image = OpenCVWrapper.convertGrayscale(image)
+                break
+            case .BINARY:
+                self.presentedImage.image = OpenCVWrapper.convertBinary(image)
+                break
+            case .NEGATE:
+                self.presentedImage.image = OpenCVWrapper.convertNegative(image)
+                break
+            case .EQUALIZE:
+                self.presentedImage.image = OpenCVWrapper.equalization(image)
+                break
+            default:
+                break
             }
-            break
-        default:
-            break
         }
     }
 }
@@ -179,7 +195,7 @@ extension MainViewController: SideMenuViewControllerDelegate{
 
     func hideSideMenu() { _hideMenu() }
     
-    func performAction(_ type: OperationType) {
+    func performAction(_ type: OperationTypes) {
         print("SideMenuDelegate in MainVC:")
         switch type{
         case .presentController(let controller):

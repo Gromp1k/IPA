@@ -9,9 +9,9 @@ import Foundation
 
 class OperationCellModel{
     private var label:String
-    private var operation:OperationType
+    private var operation:OperationTypes
     
-    init(label:String, operation:OperationType){
+    init(label:String, operation:OperationTypes){
         self.label = label
         self.operation = operation
     }
@@ -20,17 +20,35 @@ class OperationCellModel{
         get{return self.label}
     }
 
-    public var Operation: OperationType{
+    public var Operation: OperationTypes{
         get{return self.operation}
     }
 }
 
-enum OperationType{
-    case presentController(_ controllerType: ControllerType)
-    case modifyImage(_ modificationType: ModificationType)
+enum OperationTypes{
+    case presentController(_ controllerType: ControllerTypes)
+    case modifyImage(_ modificationType: ModificationTypes)
    
     
-    enum ControllerType{case imagePickerVC, histogramVC, faceDetectionVC, cellDetectionVC, none}
-    enum ModificationType{ case saveImage, deleteImage,none}
+    enum ControllerTypes{
+        case IMAGE_PICKER_VC, HISTROGRAM_VC, FACE_DETECTION_VC, CELLS_DETECTION_VC, KERNEL_VC, LOOKUP_TABLE_VC, BITWISE_VC
+             
+             
+        case TRESHOLD_ADAPTIVE_VC(_ treshold: TresholdAdaptiveTypes)
+        enum TresholdAdaptiveTypes{
+            case ADAPTIVE_MEAN, ADAPTIVE_GAUSE
+        }
+        
+        case TRESHOLD_VC(_ treshold: TresholdTypes)
+        enum TresholdTypes{
+            case OTSU, STANDARD
+        }
+    }
+    
+    enum ModificationTypes{
+        case SAVE_IMAGE_TO_FILE, DELETE_PRESENTED_IMAGE
+        
+        case GRAYSCALE, BINARY,NEGATE,EQUALIZE
+    }
 }
 

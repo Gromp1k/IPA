@@ -9,7 +9,7 @@ import UIKit
 
 protocol SideMenuViewControllerDelegate{
     func hideSideMenu() 
-    func performAction(_ type:OperationType)
+    func performAction(_ type:OperationTypes)
 }
 
 class SideMenuViewController: UIViewController {
@@ -85,13 +85,53 @@ extension SideMenuViewController{
     private func setupFullData() ->[ExpandingCellModel] {
         var array: [ExpandingCellModel] = []
         array.append(ExpandingCellModel(label: "File", operations: [
-            OperationCellModel(label: "Open", operation: OperationType.presentController(.imagePickerVC)),
-            OperationCellModel(label: "Save", operation: .modifyImage(.saveImage)),
-            OperationCellModel(label: "Close", operation: .modifyImage(.deleteImage))]
+            OperationCellModel(label: "Open", operation: .presentController(.IMAGE_PICKER_VC)),
+            OperationCellModel(label: "Save", operation: .modifyImage(.SAVE_IMAGE_TO_FILE)),
+            OperationCellModel(label: "Close", operation: .modifyImage(.DELETE_PRESENTED_IMAGE))]
         ))
+        
+        array.append(ExpandingCellModel(label: "Convertions", operations: [
+            OperationCellModel(label: "Grayscale", operation: .modifyImage(.GRAYSCALE)),
+            OperationCellModel(label: "Binary", operation: .modifyImage(.BINARY)),
+            OperationCellModel(label: "Negate", operation: .modifyImage(.NEGATE)),
+            OperationCellModel(label: "Equalize", operation: .modifyImage(.EQUALIZE)),
+            OperationCellModel(label: "Treshold", operation: .presentController(.TRESHOLD_VC(.STANDARD))),
+            OperationCellModel(label: "Otsu treshold", operation: .presentController(.TRESHOLD_VC(.OTSU)))]
+        ))
+        
+        array.append(ExpandingCellModel(label: "Blurs", operations: [
+            OperationCellModel(label: "Blur", operation: .presentController(.KERNEL_VC)),
+            OperationCellModel(label: "Gaussian Blur", operation: .presentController(.KERNEL_VC)),
+            OperationCellModel(label: "Sobel blur", operation: .presentController(.KERNEL_VC)),
+            OperationCellModel(label: "Laplasian blur", operation: .presentController(.KERNEL_VC)),
+            OperationCellModel(label: "Canny blur", operation: .presentController(.KERNEL_VC)),
+            OperationCellModel(label: "Otsu treshold", operation: .presentController(.KERNEL_VC))]
+        ))
+        
+        array.append(ExpandingCellModel(label: "Bitwise Operation", operations: [
+            OperationCellModel(label: "AND", operation: .presentController(.BITWISE_VC)),
+            OperationCellModel(label: "OR", operation: .presentController(.BITWISE_VC)),
+            OperationCellModel(label: "NOT", operation: .presentController(.BITWISE_VC)),
+            OperationCellModel(label: "XOR", operation: .presentController(.BITWISE_VC))]
+        ))
+        
+        array.append(ExpandingCellModel(label: "Morphology Operation", operations: [
+            OperationCellModel(label: "Erode", operation: .modifyImage(.GRAYSCALE)),
+            OperationCellModel(label: "Dilate", operation: .modifyImage(.BINARY)),
+            OperationCellModel(label: "Open", operation: .modifyImage(.NEGATE)),
+            OperationCellModel(label: "Close", operation: .modifyImage(.EQUALIZE)),
+            OperationCellModel(label: "Skale", operation: .presentController(.IMAGE_PICKER_VC))]
+        ))
+        
+        array.append(ExpandingCellModel(label: "Histogram", operations: [
+            OperationCellModel(label: "Histogram", operation: .presentController(.HISTROGRAM_VC)),
+            OperationCellModel(label: "Lookup table", operation: .presentController(.LOOKUP_TABLE_VC))]
+        ))
+        
+        
         array.append(ExpandingCellModel(label: "Live Feed", operations: [
-            OperationCellModel(label: "Face Detection", operation: .presentController(.faceDetectionVC)),
-            OperationCellModel(label: "Cells Segmentation", operation: .presentController(.cellDetectionVC))]
+            OperationCellModel(label: "Face Detection", operation: .presentController(.FACE_DETECTION_VC)),
+            OperationCellModel(label: "Cells Segmentation", operation: .presentController(.CELLS_DETECTION_VC))]
         ))
         return array
     }

@@ -5,12 +5,7 @@
 //  Created by Kacper on 19/01/2022.
 //
 
-import Foundation
-
-
-
 class ExpandingCellModel{
-    
     private let label:String
     private var isExpanded:Bool
     private let operations:[OperationCellModel]

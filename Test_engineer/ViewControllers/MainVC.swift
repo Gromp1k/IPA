@@ -139,7 +139,7 @@ class MainViewController: UIViewController {
                     }
                     else{
                         var config = PHPickerConfiguration()
-                        config.filter = .images
+                        config.filter = .any(of: [.images,.livePhotos])
                         config.selectionLimit = 1
                         let picker = PHPickerViewController(configuration: config)
                         picker.delegate = self

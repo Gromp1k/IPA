@@ -44,6 +44,9 @@
 +(UIImage *) morphClose:(UIImage *)src;
 +(UIImage *) morphSkale:(UIImage *)src;
 
++(UIImage *) watershed:(UIImage *)src;
+
+
 +(int) depth:(UIImage *)src;
 +(int) getPixelAt:(UIImage *)src X:(int)x Y:(int)y;
 

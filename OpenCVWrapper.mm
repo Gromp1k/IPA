@@ -60,7 +60,7 @@
 /// @param image image of type `UIIMage`
 /// @param level value of the treshold
 /// - Returns: image of type UIImage
-+(UIImage *) tresholding:(UIImage *)image tresholds:(int)level{
++(UIImage *) thresholding:(UIImage *)image tresholds:(int)level{
     cv::Mat img, gray, binary;
     UIImageToMat(image,img);
     if(img.channels()!=1) cv::cvtColor(img, gray, cv::COLOR_BGR2GRAY);
@@ -75,7 +75,7 @@
 /// @param image image of type `UIIMage`
 /// @param level value of the treshold
 /// - Returns: image of type UIImage
-+(UIImage *) tresholdingAdaptive:(UIImage *)image tresholds:(int)level{
++(UIImage *) thresholdingAdaptive:(UIImage *)image thresholds:(int)level{
     cv::Mat adapt;
     UIImageToMat(image, adapt);
     if(adapt.channels()!=1) cv::cvtColor(adapt, adapt, cv::COLOR_BGR2GRAY);
@@ -89,7 +89,7 @@
 ///             then image is tresholded with treshold value equal `level`
 /// @param image image of type `UIIMage`
 /// @param level value of the treshold
-+(UIImage *) tresholdingOtsu:(UIImage *)image tresholds:(int)level{
++(UIImage *) thresholdingOtsu:(UIImage *)image thresholds:(int)level{
     cv::Mat ret2;
     UIImageToMat(image, ret2);
     if(ret2.channels()!=1) cv::cvtColor(ret2, ret2, cv::COLOR_BGR2GRAY);
@@ -341,13 +341,13 @@
     cv::filter2D(step1,step2,step1.depth(),ms2);
     return MatToUIImage(step2);
 }
-///  Equalization of the image
+///  Equalization of the image's histogram
 ///
 /// Performs equalization operation  the image
 /// @param image image of type `UIIMage`
 ///
 /// - Returns: image of type UIImage
-+(UIImage *) equalization:(UIImage *)image{
++(UIImage *) histEqualization:(UIImage *)image{
     cv::Mat eqz;
     UIImageToMat(image, eqz);
     if(eqz.channels()!=1)
@@ -356,7 +356,19 @@
     return MatToUIImage(eqz);
 }
 
-
+///  Normalization of the image's histogram
+///
+/// Performs normalization operation  the image
+/// @param image image of type `UIIMage`
+///
+/// - Returns: image of type UIImage
++(UIImage *) histNormalize:(UIImage *)image min:(int)minVal max:(int)maxVal{
+    cv::Mat norm;
+    UIImageToMat(image, norm);
+    cv::normalize(norm, norm, minVal,maxVal,cv::NORM_MINMAX  );
+    return MatToUIImage(norm);
+    
+}
 
 
 

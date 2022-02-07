@@ -7,7 +7,7 @@
 extension UIImage {
     func getImageLookupTable() -> [UIColor: [Int]] {
         
-        let startTime = CFAbsoluteTimeGetCurrent()
+     //   let startTime = CFAbsoluteTimeGetCurrent()
         
         guard let cgImage = self.cgImage else { return [:] }
         guard let imageData = cgImage.dataProvider?.data as Data? else {  return [:] }
@@ -66,8 +66,8 @@ extension UIImage {
            LUT[.green] = green_channel
        }
         
-        let timeElapsed = CFAbsoluteTimeGetCurrent() - startTime
-        print("Time elapsed for \(self.size): \(timeElapsed) s.")
+       // let timeElapsed = CFAbsoluteTimeGetCurrent() - startTime
+      //  print("Time elapsed for \(self.size): \(timeElapsed) s.")
         
         return LUT
     }

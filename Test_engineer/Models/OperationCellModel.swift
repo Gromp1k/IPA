@@ -27,7 +27,7 @@ enum OperationTypes{
     case modifyImage(_ modificationType: ModificationTypes)
    
     enum ControllerTypes{
-        case IMAGE_PICKER_VC, HISTROGRAM_VC, FACE_DETECTION_VC, CELLS_DETECTION_VC, LOOKUP_TABLE_VC
+        case IMAGE_PICKER_VC, HISTROGRAM_VC, FACE_DETECTION_VC, CELLS_DETECTION_VC, LOOKUP_TABLE_VC, NORMALIZE_HISTOGRAM_DETAILS_VC
            
         case BITWISE_VC(_ bitwise: BitwiseTypes)
         enum BitwiseTypes{ case AND,NOR,XOR,OR }
@@ -44,8 +44,10 @@ enum OperationTypes{
     
     enum ModificationTypes{
         case SAVE_IMAGE_TO_FILE, DELETE_PRESENTED_IMAGE
-        case GRAYSCALE, BINARY,NEGATE,EQUALIZE
+        case GRAYSCALE, BINARY,NEGATE
         case ERODE,DILATE, OPEN,CLOSE,SKELETONIZE,WATERSHED
+        
+        case EQUALIZE
     }
 }
 

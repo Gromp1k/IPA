@@ -39,6 +39,8 @@ class MainViewController: UIViewController {
     var delegate: MainViewControllerDelegate? /// delegate of MainViewContoller
     var sideMenuViewController: SideMenuViewController?
     var kernelDetailsViewController: KernelDetailsViewController?
+    var normalizeDetailsViewController: HistogramNormalizeDeteilsVC?
+    
     
     private var isSideMenuPresented:Bool = false
     private var isBitwisePick = false /// case: callback from SideMenu to perform bitwise - flag if PHPicker updates or not PresentedImage.image
@@ -114,6 +116,7 @@ class MainViewController: UIViewController {
             case .FACE_DETECTION_VC:
                 guard let controller = storyboard?.instantiateViewController(withIdentifier: "LiveFeedViewController") as? LiveFeedViewController else{ return }
                 present(controller,animated: true)
+                break
                 
             case .KERNEL_VC(let blur):
                 self.blurOperationType = blur
@@ -147,6 +150,14 @@ class MainViewController: UIViewController {
                     }
                 }
                 break
+           
+        case .NORMALIZE_HISTOGRAM_DETAILS_VC:
+                guard let controller = storyboard?.instantiateViewController(withIdentifier: "HistogramNormalizeDeteilsVC") as?  HistogramNormalizeDeteilsVC else{ return }
+                controller.transitioningDelegate = self
+                controller.modalPresentationStyle = .custom
+                controller.delegate = self
+                present(controller,animated: true)
+                break
 
             default:
                 break
@@ -176,9 +187,8 @@ class MainViewController: UIViewController {
                     break
                 case .NEGATE:  imageModel.Image = OpenCVWrapper.convertNegative( imageModel.Image)
                     break
-                case .EQUALIZE:  imageModel.Image = OpenCVWrapper.equalization( imageModel.Image)
+                case .EQUALIZE:  imageModel.Image = OpenCVWrapper.histEqualization( imageModel.Image)
                     break
-            
                 case .ERODE:  imageModel.Image = OpenCVWrapper.morphErode( imageModel.Image)
                     break
                 
@@ -278,10 +288,27 @@ extension MainViewController: KernelDetailsViewControllerDelegate{
                 case .SOBEL: imageModel.Image = OpenCVWrapper.blurSobel(imageModel.Image, withKernel: Int32(size)) ;break
                 default: break
             }
+            self.presentedImage.image = self.imageModel.Image
             DispatchQueue.global().async {
                 self.imageModel.LookupTable = self.imageModel.Image.getImageLookupTable()
             }
         }
        
     }
+}
+
+extension MainViewController:HistogramNormalizeDeteilsViewControllerDelegate{
+    func normalizeCallback(minVal: Int32, maxVal: Int32) {
+        print(minVal, maxVal)
+        if self.imageModel.IsImageLoaded {
+            imageModel.Image = OpenCVWrapper.histNormalize(self.imageModel.Image, min: minVal, max: maxVal)
+            self.presentedImage.image = self.imageModel.Image
+            DispatchQueue.global().async {
+                self.imageModel.LookupTable = self.imageModel.Image.getImageLookupTable()
+            }
+        }
+    
+    }
+    
+    
 }

@@ -10,11 +10,21 @@ class HistogramViewController: UIViewController {
     @IBOutlet weak var containerView: UIView!
     private var chart_axes: ChartAxes!
     
+    @IBOutlet weak var maxYlabel: UILabel!
+    
     var data: [UIColor: [Int]] = [:]
     override func viewDidLoad() {
         view.backgroundColor = UIColor.offWhite
         super.viewDidLoad()
         self.setupUI()
+        
+        if let result = data.max(by: {$0.value.max() ?? 0 < $1.value.max() ?? 0}),
+        let maxValue = result.value.max() {
+            self.maxYlabel.text = String(maxValue);
+            if maxValue == 0 {
+                self.maxYlabel.isHidden = true;
+            }
+        }
         
         //draw grid
         let chart_grid = ChartGrid(frame: containerView.frame)

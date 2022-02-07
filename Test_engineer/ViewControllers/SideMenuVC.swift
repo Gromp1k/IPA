@@ -88,7 +88,7 @@ extension SideMenuViewController{
             OperationCellModel(label: "Grayscale", operation: .modifyImage(.GRAYSCALE)),
             OperationCellModel(label: "Binary", operation: .modifyImage(.BINARY)),
             OperationCellModel(label: "Negate", operation: .modifyImage(.NEGATE)),
-            OperationCellModel(label: "Equalize", operation: .modifyImage(.EQUALIZE)),
+         
             OperationCellModel(label: "Treshold", operation: .presentController(.TRESHOLD_VC(.STANDARD))),
             OperationCellModel(label: "Otsu treshold", operation: .presentController(.TRESHOLD_VC(.OTSU)))]
         ))
@@ -118,6 +118,8 @@ extension SideMenuViewController{
         ))
         
         array.append(ExpandingCellModel(label: "Histogram", operations: [
+            OperationCellModel(label: "Equalize", operation: .modifyImage(.EQUALIZE)),
+            OperationCellModel(label: "Normalize", operation: .presentController(.NORMALIZE_HISTOGRAM_DETAILS_VC)),
             OperationCellModel(label: "Histogram", operation: .presentController(.HISTROGRAM_VC)),
             OperationCellModel(label: "Lookup table", operation: .presentController(.LOOKUP_TABLE_VC))]
         ))

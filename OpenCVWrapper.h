@@ -21,11 +21,13 @@
 +(UIImage *) convertGrayscale:(UIImage *)src;
 +(UIImage *) convertNegative:(UIImage *)src;
 +(UIImage *) convertBinary:(UIImage *)src;
-+(UIImage *) equalization:(UIImage *)src;
 
-+(UIImage *) tresholding:(UIImage *)src tresholds:(int)level;
-+(UIImage *) tresholdingAdaptive:(UIImage *)src tresholds:(int)level;
-+(UIImage *) tresholdingOtsu:(UIImage *)src tresholds:(int)level;
++(UIImage *) histEqualization:(UIImage *)src;
++(UIImage *) histNormalize:(UIImage *)src min:(int)minVal max:(int)maxVal;
+
++(UIImage *) thresholding:(UIImage *)src tresholds:(int)level;
++(UIImage *) thresholdingAdaptive:(UIImage *)src thresholds:(int)level;
++(UIImage *) thresholdingOtsu:(UIImage *)src thresholds:(int)level;
 
 +(UIImage *) blur:(UIImage *)src withKernel:(int)kernelSize;
 +(UIImage *) blurGaussian:(UIImage *)src withKernel:(int)kernelSize;

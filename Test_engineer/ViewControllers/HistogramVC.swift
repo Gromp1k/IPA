@@ -129,19 +129,18 @@ extension HistogramViewController {
         }
         
         override func draw(_ rect: CGRect) {
-            let axes_offset = 3.0; // axes offset
-            
+            let oy_offset = 2.5; // axes offset
+            let ox_offset = 2.5
             //unit = [ 256 indexes ] * ( [ units per bar ] + [ units per offset ] ) - [ units per offset ( for last bar) ]
             let unit = CGFloat(0.389); // bar is 3 units, offset betweeen bars is 1
             for (index, value) in data.enumerated() {
-                let x = axes_offset + CGFloat(index * 4) * unit
-                let y = ( ( rect.height - axes_offset ) - ( (CGFloat(value) / CGFloat(self.maxValue)) * (rect.height - axes_offset) )  ) + axes_offset
+                let x = oy_offset + CGFloat(index * 4) * unit // FIX ME - padding bottom
+                let y = ( ( rect.height - (ox_offset) ) - ( (CGFloat(value) / CGFloat(self.maxValue)) * (rect.height - ox_offset) )  ) + ox_offset
                 let bar = CAShapeLayer()
-                let barShape =  CGRect(x: x, y:  y, width: 3.0 * unit, height: rect.height - y)
+                let barShape =  CGRect(x: x, y:  y - ox_offset, width: 3.0 * unit, height: rect.height - y)
                 bar.path = UIBezierPath(rect: barShape).cgPath
                 bar.fillColor = self.color.withAlphaComponent(0.7).cgColor
                 self.layer.addSublayer(bar)
-            
             }
         }
     }

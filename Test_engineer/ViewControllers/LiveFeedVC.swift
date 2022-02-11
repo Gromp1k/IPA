@@ -21,6 +21,7 @@ class LiveFeedViewController: UIViewController {
     }
     
     private func setupCamera() {
+        // detect camera object from the divice
         let deviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera], mediaType: .video, position: .front)
         if let device = deviceDiscoverySession.devices.first {
             if let deviceInput = try? AVCaptureDeviceInput(device: device) {
@@ -32,6 +33,7 @@ class LiveFeedViewController: UIViewController {
         }
     }
     
+    // add preview layer and details to the view
     private func setupPreview() {
         self.previewLayer.videoGravity = .resizeAspectFill
         self.view.layer.addSublayer(self.previewLayer)
@@ -50,11 +52,11 @@ class LiveFeedViewController: UIViewController {
 
 extension LiveFeedViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
     
+    //method called every received frame
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         
-        guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
-          return
-        }
+        //check if buffer exists
+        guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {return}
 
         let faceDetectionRequest = VNDetectFaceLandmarksRequest(completionHandler: { (request: VNRequest, error: Error?) in
             DispatchQueue.main.async {

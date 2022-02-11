@@ -10,6 +10,21 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
+        <!--Live Segmentation View Controller-->
+        <scene sceneID="c8C-ZB-RYR">
+            <objects>
+                <viewController storyboardIdentifier="LiveSegmentationViewController" id="6R9-kn-h9S" customClass="LiveSegmentationViewController" customModule="Test_engineer" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="1PJ-w6-4oI">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="bdR-Xa-BD0"/>
+                        <color key="backgroundColor" systemColor="systemGreenColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="CPK-J5-wvk" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1852.1739130434785" y="-95.089285714285708"/>
+        </scene>
         <!--Main View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
@@ -283,7 +298,55 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ICv-Cy-0Wb" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="350.72463768115944" y="784.82142857142856"/>
+            <point key="canvasLocation" x="155" y="785"/>
+        </scene>
+        <!--Threshold Details View Controller-->
+        <scene sceneID="3Td-bt-NVS">
+            <objects>
+                <viewController id="9jt-rp-ixy" customClass="ThresholdDetailsViewController" customModule="Test_engineer" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="v3A-zf-mOA">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="486"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="255" minValue="0.0" maxValue="255" translatesAutoresizingMaskIntoConstraints="NO" id="vFe-Is-xSH">
+                                <rect key="frame" x="13" y="254" width="388" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="tintColor" systemColor="systemGray2Color"/>
+                                <connections>
+                                    <action selector="maxChanged:" destination="02y-5A-41S" eventType="valueChanged" id="E3S-bc-OHV"/>
+                                </connections>
+                            </slider>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9vK-kt-jx8">
+                                <rect key="frame" x="174" y="376" width="67" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Button"/>
+                                <connections>
+                                    <action selector="sendData:" destination="9jt-rp-ixy" eventType="touchUpInside" id="Sty-2M-zST"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ya6-LE-o6q">
+                                <rect key="frame" x="186" y="137" width="42" height="23"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="cts-ev-KME"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="414" height="486"/>
+                    <connections>
+                        <outlet property="btnSend" destination="9vK-kt-jx8" id="AgF-hz-48h"/>
+                        <outlet property="siderLabel" destination="Ya6-LE-o6q" id="Lgf-8W-lO7"/>
+                        <outlet property="slider" destination="vFe-Is-xSH" id="zWh-Q0-GGj"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="c3F-Hp-dRh" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="977" y="746"/>
         </scene>
         <!--Kernel Details View Controller-->
         <scene sceneID="5El-KS-Gmu">
@@ -357,14 +420,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="424" height="444"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="255" minValue="0.0" maxValue="255" translatesAutoresizingMaskIntoConstraints="NO" id="wxg-Mk-0Zw">
-                                <rect key="frame" x="18" y="252" width="388" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="tintColor" systemColor="systemGray2Color"/>
-                                <connections>
-                                    <action selector="maxChanged:" destination="02y-5A-41S" eventType="valueChanged" id="eZh-5a-vi6"/>
-                                </connections>
-                            </slider>
                             <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="255" translatesAutoresizingMaskIntoConstraints="NO" id="9xH-Y9-eUk">
                                 <rect key="frame" x="18" y="165" width="388" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -404,6 +459,14 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="255" minValue="0.0" maxValue="255" translatesAutoresizingMaskIntoConstraints="NO" id="wxg-Mk-0Zw">
+                                <rect key="frame" x="18" y="262" width="388" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="tintColor" systemColor="systemGray2Color"/>
+                                <connections>
+                                    <action selector="maxChanged:" destination="02y-5A-41S" eventType="valueChanged" id="eZh-5a-vi6"/>
+                                </connections>
+                            </slider>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="gyM-ge-VZ4"/>
                         <color key="backgroundColor" name="offwhite"/>
@@ -509,7 +572,7 @@
             <color red="0.10199999809265137" green="0.21600000560283661" blue="0.30199998617172241" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="Colorbg2">
-            <color red="0.25098039215686274" green="0.40784313725490196" blue="0.50980392156862742" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.25099998712539673" green="0.40799999237060547" blue="0.50999999046325684" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="colorGainsboro">
             <color red="0.87800002098083496" green="0.87800002098083496" blue="0.88599997758865356" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

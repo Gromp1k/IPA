@@ -80,8 +80,11 @@ extension SideMenuViewController{
         
         array.append(ExpandingCellModel(label: "File", operations: [
             OperationCellModel(label: "Open", operation: .presentController(.IMAGE_PICKER_VC)),
+            OperationCellModel(label: "Camera", operation: .presentController(.CAMERE_PHOTO_VC)),
             OperationCellModel(label: "Save", operation: .modifyImage(.SAVE_IMAGE_TO_FILE)),
-            OperationCellModel(label: "Close", operation: .modifyImage(.DELETE_PRESENTED_IMAGE))]
+            OperationCellModel(label: "Close", operation: .modifyImage(.DELETE_PRESENTED_IMAGE)),
+        
+        ]
         ))
         
         array.append(ExpandingCellModel(label: "Convertions", operations: [
@@ -89,8 +92,8 @@ extension SideMenuViewController{
             OperationCellModel(label: "Binary", operation: .modifyImage(.BINARY)),
             OperationCellModel(label: "Negate", operation: .modifyImage(.NEGATE)),
          
-            OperationCellModel(label: "Treshold", operation: .presentController(.TRESHOLD_VC(.STANDARD))),
-            OperationCellModel(label: "Otsu treshold", operation: .presentController(.TRESHOLD_VC(.OTSU)))]
+            OperationCellModel(label: "Treshold", operation: .presentController(.THRESHOLD_VC(.STANDARD))),
+            OperationCellModel(label: "Otsu treshold", operation: .presentController(.THRESHOLD_VC(.OTSU)))]
         ))
         
         array.append(ExpandingCellModel(label: "Blurs", operations: [
@@ -126,7 +129,7 @@ extension SideMenuViewController{
         
         array.append(ExpandingCellModel(label: "Live Feed", operations: [
             OperationCellModel(label: "Face Detection", operation: .presentController(.FACE_DETECTION_VC)),
-            OperationCellModel(label: "Cells Segmentation", operation: .presentController(.CELLS_DETECTION_VC))]
+            OperationCellModel(label: "Cells Segmentation", operation: .presentController(.SEGMENTATION_VC))]
         ))
         return array
     }

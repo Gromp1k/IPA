@@ -17,6 +17,7 @@ class MainViewController: UIViewController {
     @IBOutlet weak var sideMenuView: UIView!
     @IBOutlet weak var presentedImage: UIImageView!
     @IBOutlet weak var menuViewLeadingConstraint: NSLayoutConstraint!
+    
     @IBAction func showMenu(_ sender: Any) {
         self.sideMenuBackgroundView.isHidden = false
         UIView.animate(withDuration: 0.25) {
@@ -40,6 +41,7 @@ class MainViewController: UIViewController {
     var sideMenuViewController: SideMenuViewController?
     var kernelDetailsViewController: KernelDetailsViewController?
     var normalizeDetailsViewController: HistogramNormalizeDeteilsVC?
+    var tresholdDetaildVC : ThresholdDetailsViewController?
     
     
     private var isSideMenuPresented:Bool = false
@@ -57,19 +59,15 @@ class MainViewController: UIViewController {
     
     /// Segues between ViewControllers ( with Protocol-Delegate communication pattern)
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if (segue.identifier == "MainVC_SideMenuVC_Segue")
-        {
-            if let controller = segue.destination as? SideMenuViewController
-            {
+        if segue.identifier == "MainVC_SideMenuVC_Segue" {
+                    if let controller = segue.destination as? SideMenuViewController{
                 self.sideMenuViewController = controller
                 self.sideMenuViewController?.delegate = self
                 self.delegate = self.sideMenuViewController
             }
         }
-        else if (segue.identifier == "MainVC_KernelDetailsViewController_Segue")
-        {
-            if let controller = segue.destination as? KernelDetailsViewController
-            {
+        else if segue.identifier == "MainVC_KernelDetailsViewController_Segue" {
+            if let controller = segue.destination as? KernelDetailsViewController {
                 self.kernelDetailsViewController = controller
                 self.kernelDetailsViewController?.delegate = self
                 self.kernelDetailsViewController?.transitioningDelegate = self
@@ -77,7 +75,6 @@ class MainViewController: UIViewController {
             }
         }
     }
-    
     
     private func setupUI(){
         self.sideMenuBackgroundView.isHidden = true
@@ -104,6 +101,26 @@ class MainViewController: UIViewController {
     ///Function to handle callback from SideMenuViewController - presenting controllers
     private func presentController(_ controller: OperationTypes.ControllerTypes){
         switch controller{
+        
+        case .SEGMENTATION_VC:
+            guard let controller = storyboard?.instantiateViewController(withIdentifier: "LiveSegmentationViewController") as? LiveSegmentationViewController else{ return }
+            present(controller,animated: true)
+            break
+            
+        case .THRESHOLD_VC(let threshold):
+            guard let controller = storyboard?.instantiateViewController(withIdentifier: "ThresholdDetailsViewController") as? ThresholdDetailsViewController else{ return }
+            controller.delegate = self
+            switch threshold {
+            case .OTSU:
+                controller.inputFlag = .THRESHOLD
+            case .STANDARD:
+                controller.inputFlag = .THRESHOLD
+            case .ADAPTIVE:
+                controller.inputFlag = .THRESHOLD_ADAPTIVE
+            }
+            present(controller,animated: true)
+            
+                break
             case .IMAGE_PICKER_VC:
                 var config = PHPickerConfiguration()
                 config.filter = .images
@@ -113,11 +130,18 @@ class MainViewController: UIViewController {
                 present(picker, animated: true)
                 break
             
+            case .CAMERE_PHOTO_VC:
+                let picker = UIImagePickerController()
+                picker.sourceType = .camera
+                picker.allowsEditing = false
+                picker.delegate = self
+                present(picker, animated: true)
+                break
+            
             case .FACE_DETECTION_VC:
                 guard let controller = storyboard?.instantiateViewController(withIdentifier: "LiveFeedViewController") as? LiveFeedViewController else{ return }
                 present(controller,animated: true)
                 break
-                
             case .KERNEL_VC(let blur):
                 self.blurOperationType = blur
                 guard let controller = storyboard?.instantiateViewController(withIdentifier: "KernelDetailsViewController") as? KernelDetailsViewController else{ return }
@@ -127,19 +151,15 @@ class MainViewController: UIViewController {
                 self.kernelDetailsViewController = controller
                 present(controller,animated: true)
                 break
-            
-        case .HISTROGRAM_VC:
-            guard let controller = storyboard?.instantiateViewController(withIdentifier: "HistogramViewController") as? HistogramViewController else{ return }
-            controller.data = imageModel.LookupTable
-            present(controller,animated: true)
-            
+            case .HISTROGRAM_VC:
+                guard let controller = storyboard?.instantiateViewController(withIdentifier: "HistogramViewController") as? HistogramViewController else{ return }
+                controller.data = imageModel.LookupTable
+                present(controller,animated: true)
             case .BITWISE_VC(let bitwiseType):
             if(imageModel.IsImageLoaded){
                     self.isBitwisePick = true // true => image from PHPicker won't be set as presentedImage.image
                     self.bitwiseOperationType = bitwiseType
-                    if(bitwiseType == .NOR){
-                        imageModel.Image = OpenCVWrapper.bitwiseNOT(imageModel.Image)
-                    }
+                    if bitwiseType == .NOR { imageModel.Image = OpenCVWrapper.bitwiseNOT(imageModel.Image) }
                     else{
                         var config = PHPickerConfiguration()
                         config.filter = .any(of: [.images,.livePhotos])
@@ -151,16 +171,23 @@ class MainViewController: UIViewController {
                 }
                 break
            
-        case .NORMALIZE_HISTOGRAM_DETAILS_VC:
+            case .NORMALIZE_HISTOGRAM_DETAILS_VC:
                 guard let controller = storyboard?.instantiateViewController(withIdentifier: "HistogramNormalizeDeteilsVC") as?  HistogramNormalizeDeteilsVC else{ return }
                 controller.transitioningDelegate = self
                 controller.modalPresentationStyle = .custom
                 controller.delegate = self
                 present(controller,animated: true)
                 break
-
+            
             default:
                 break
+        }
+    }
+    
+    private func updateImage(){
+        self.presentedImage.image =  imageModel.Image
+        DispatchQueue.global().async {
+            self.imageModel.LookupTable = self.imageModel.Image.getImageLookupTable()
         }
     }
     
@@ -169,18 +196,15 @@ class MainViewController: UIViewController {
            // guard let image = self.presentedImage.image else {return}
             if(imageModel.IsImageLoaded){
             switch modification{
-                
                 case .SAVE_IMAGE_TO_FILE:
                     let imageSaver = ImageSaver()
                     imageSaver.writeToPhotoAlbum(image:  imageModel.Image)
                     break
-                
                 case .DELETE_PRESENTED_IMAGE:
                     imageModel.Image = UIImage() //Set "image not presented" graphics
                     imageModel.IsImageLoaded = false // set flag to false
                     self.delegate?.isImageLoaded(false) // send state of flag to all listeners via delegate
                     break
-                 
                 case .GRAYSCALE:  imageModel.Image = OpenCVWrapper.convertGrayscale( imageModel.Image)
                     break
                 case .BINARY:  imageModel.Image = OpenCVWrapper.convertBinary( imageModel.Image)
@@ -191,34 +215,53 @@ class MainViewController: UIViewController {
                     break
                 case .ERODE:  imageModel.Image = OpenCVWrapper.morphErode( imageModel.Image)
                     break
-                
                 case .DILATE:  imageModel.Image = OpenCVWrapper.morphDilate( imageModel.Image)
                     break
-                
                 case .OPEN:  imageModel.Image = OpenCVWrapper.morphOpen( imageModel.Image)
                     break
-                
                 case .CLOSE:  imageModel.Image = OpenCVWrapper.morphClose( imageModel.Image)
                     break
-                
-                case .SKELETONIZE:
+                case .SKELETONIZE:  imageModel.Image = OpenCVWrapper.morphSkale( imageModel.Image)
                     break
-                
                 case .WATERSHED:   imageModel.Image = OpenCVWrapper.watershed( imageModel.Image)
                     break
             }
-                
-                self.presentedImage.image =  imageModel.Image
-                DispatchQueue.global().async {
-                    self.imageModel.LookupTable = self.imageModel.Image.getImageLookupTable()
-                }
+                self.updateImage()
         }
- 
-            
-        
     }
 }
 
+extension MainViewController : ThresholdDetailsViewControllerDelegate {
+    func thresholdCallback(threshold: Int, type: ThresholdTypeCallback) {
+        if self.imageModel.IsImageLoaded {
+            switch type {
+            case .THRESHOLD: imageModel.Image = OpenCVWrapper.thresholding( imageModel.Image, tresholds: Int32(threshold))
+                break
+            case .THRESHOLD_ADAPTIVE: imageModel.Image = OpenCVWrapper.thresholdingAdaptive(imageModel.Image, thresholds: Int32(threshold))
+                break
+            case .THRESHOLD_OTSU: imageModel.Image = OpenCVWrapper.thresholdingOtsu(imageModel.Image, thresholds: Int32(threshold))
+                break
+            }
+            self.updateImage()
+        }
+    }
+}
+
+
+extension MainViewController : UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true, completion: nil)
+    }
+
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        guard let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage else{ return }
+        self.imageModel.Image = image
+        self.presentedImage.image = image
+    }
+
+
+}
 
 extension MainViewController: UIViewControllerTransitioningDelegate {
     func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
@@ -241,7 +284,7 @@ extension MainViewController:  PHPickerViewControllerDelegate{
                         case .XOR: self.imageModel.Image = OpenCVWrapper.bitwiseXOR(self.imageModel.Image, with: image); break
                         case .OR: self.imageModel.Image = OpenCVWrapper.bitwiseOR(self.imageModel.Image, with: image); break
                             /// .NOR handled - doesn't need extra image paramater, bases on presentedImage.image
-                            default: break
+                        default: break
                         }
                     }
                     else{
@@ -252,7 +295,6 @@ extension MainViewController:  PHPickerViewControllerDelegate{
                     DispatchQueue.global().async {self.imageModel.LookupTable =  self.imageModel.Image.getImageLookupTable() }
                     self.presentedImage.image = self.imageModel.Image
                     self.isBitwisePick = false // set flag as default
-                    
                 }
             }
         }
@@ -288,10 +330,7 @@ extension MainViewController: KernelDetailsViewControllerDelegate{
                 case .SOBEL: imageModel.Image = OpenCVWrapper.blurSobel(imageModel.Image, withKernel: Int32(size)) ;break
                 default: break
             }
-            self.presentedImage.image = self.imageModel.Image
-            DispatchQueue.global().async {
-                self.imageModel.LookupTable = self.imageModel.Image.getImageLookupTable()
-            }
+            self.updateImage()
         }
        
     }
@@ -302,13 +341,7 @@ extension MainViewController:HistogramNormalizeDeteilsViewControllerDelegate{
         print(minVal, maxVal)
         if self.imageModel.IsImageLoaded {
             imageModel.Image = OpenCVWrapper.histNormalize(self.imageModel.Image, min: minVal, max: maxVal)
-            self.presentedImage.image = self.imageModel.Image
-            DispatchQueue.global().async {
-                self.imageModel.LookupTable = self.imageModel.Image.getImageLookupTable()
-            }
+            self.updateImage()
         }
-    
     }
-    
-    
 }

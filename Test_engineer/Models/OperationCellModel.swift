@@ -27,7 +27,7 @@ enum OperationTypes{
     case modifyImage(_ modificationType: ModificationTypes)
    
     enum ControllerTypes{
-        case IMAGE_PICKER_VC, HISTROGRAM_VC, FACE_DETECTION_VC, CELLS_DETECTION_VC, LOOKUP_TABLE_VC, NORMALIZE_HISTOGRAM_DETAILS_VC
+        case IMAGE_PICKER_VC, HISTROGRAM_VC, FACE_DETECTION_VC, CELLS_DETECTION_VC, LOOKUP_TABLE_VC, NORMALIZE_HISTOGRAM_DETAILS_VC, CAMERE_PHOTO_VC, SEGMENTATION_VC
            
         case BITWISE_VC(_ bitwise: BitwiseTypes)
         enum BitwiseTypes{ case AND,NOR,XOR,OR }
@@ -38,8 +38,8 @@ enum OperationTypes{
         case TRESHOLD_ADAPTIVE_VC(_ treshold: TresholdAdaptiveTypes)
         enum TresholdAdaptiveTypes{ case ADAPTIVE_MEAN, ADAPTIVE_GAUSE }
         
-        case TRESHOLD_VC(_ treshold: TresholdTypes)
-        enum TresholdTypes{ case OTSU, STANDARD }
+        case THRESHOLD_VC(_ treshold: TresholdTypes)
+        enum TresholdTypes{ case OTSU, STANDARD, ADAPTIVE }
     }
     
     enum ModificationTypes{

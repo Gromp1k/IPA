@@ -244,9 +244,6 @@
     return MatToUIImage(add);
 }
 ///  Bitwise operation - NOT
-///
-///
-///
 /// @param image image of type `UIIMage`
 ///
 /// - Returns: image of type UIImage
@@ -331,15 +328,28 @@
 ///
 /// - Returns: image of type UIImage
 +(UIImage *) morphSkale:(UIImage *)image{
-    int mask1[3][3] = {{1,1,1},{1,1,1},{1,1,1}};
-    int mask2[3][3] = {{1,-2,1},{-2,4,-2},{1,-2,1}};
-    cv::Mat ms1 = cv::Mat(3,3,CV_64F,mask1);
-    cv::Mat ms2 = cv::Mat(3,3,CV_64F,mask2);
-    cv::Mat step1, step2, img;
-    UIImageToMat(image, img);
-    cv::filter2D(img,step1,img.depth(),ms1);
-    cv::filter2D(step1,step2,step1.depth(),ms2);
-    return MatToUIImage(step2);
+    cv::Mat src;
+    UIImageToMat(image, src);
+    if(src.channels()!=1) cv::cvtColor(src, src, cv::COLOR_BGR2GRAY);
+    cv::threshold(src, src, 127, 255, cv::THRESH_BINARY);
+    cv::Mat skel(src.size(), CV_8UC1);
+    cv::Mat temp;
+    cv::Mat eroded;
+    cv::Mat element = cv::getStructuringElement(cv::MORPH_CROSS, cv::Size(3, 3));
+    bool done;
+    do
+    {
+      cv::erode(src, eroded, element);
+      cv::dilate(eroded, temp, element); // temp = open(img)
+      cv::subtract(src, temp, temp);
+      cv::bitwise_or(skel, temp, skel);
+      eroded.copyTo(src);
+     
+      done = (cv::countNonZero(src) == 0);
+    } while (!done);
+    
+    return MatToUIImage(skel);
+    
 }
 ///  Equalization of the image's histogram
 ///
@@ -372,154 +382,158 @@
 
 
 
+
+
+class WatershedSegmenter{
+private:
+    cv::Mat markers;
+public:
+    void setMarkers(cv::Mat& markerImage)
+    {
+        markerImage.convertTo(markers, CV_32S);
+    }
+
+    cv::Mat process(cv::Mat &image)
+    {
+        cv::watershed(image, markers);
+        markers.convertTo(markers,CV_8U);
+        return markers;
+    }
+};
+
+
+
+using namespace cv;
+using namespace std;
+
+
+/*
+ img[markers == -1] = [255,0,0]
+ img.setTo(Scalar(255,0,0), markers==-1);
+ */
 +(UIImage *) watershed:(UIImage *)image{
-    cv::Mat src, dest;
-    UIImageToMat(image, src); // convert source src to Mat
-    cvtColor(src, src, cv::COLOR_BGRA2BGR); // change 4 to 3 channels
-
-
-    // Change the background from white to black, since that will help later to extract better results during the use of Distance Transform
-    cv::Mat mask;
-    inRange(src, cv::Scalar(255,255,255), cv::Scalar(255,255,255), mask);
-    src.setTo(cv::Scalar(0,0,0),mask);
-
-    // an approximation of second derivative, a quite strong kernel
-    cv::Mat kernel = (cv::Mat_<float>(3,3) <<
-                    1,  1, 1,
-                    1, -8, 1,
-                    1,  1, 1);
-
-    /*
-     laplacian filtering as it is
-     convert everything in something more deeper then CV_8U cause the kernel has some negative values
-     correct with uint8 - possible negative number will be truncated
-     */
-    cv::Mat laplacian;
-    cv::filter2D(src, laplacian, CV_32F, kernel);
-
-    cv::Mat sharp;
-    src.convertTo(sharp, CV_32F);
-
-    cv::Mat result = sharp - laplacian;
-
-    // convert back to 8bits gray scale
-    result.convertTo(result, CV_8UC3);
-    laplacian.convertTo(laplacian, CV_8UC3);
-
-    //binary image from source image
-    cv::Mat bnr;
-    cv::cvtColor(result, bnr, cv::COLOR_BGRA2GRAY);
-    cv::threshold(bnr, bnr, 40, 255, cv::THRESH_BINARY | cv::THRESH_OTSU);
-
-    // Perform the distance transform algorithm
-    cv::Mat dist;
-    cv::distanceTransform(bnr, dist, cv::DIST_L2, cv::DIST_MASK_3);
-
-    // Normalize the distance image for range = {0.0, 1.0} (to visualize and threshold it)
-    cv::normalize(dist, dist, 0, 1.0, cv::NORM_MINMAX);
-
-    // Threshold to obtain the peaks - the markers for the foreground objects
-    cv::threshold(dist, dist, 0.4, 1.0, cv::THRESH_BINARY);
-
-    // Dilate a bit the dist image
-    cv::Mat kernel1 = cv::Mat::ones(3, 3, CV_8U);
-    cv::dilate(dist, dist, kernel1);
-
-    //CV_8U version of the distance image - FIX_ME : for findContours()
-    cv::Mat dist_8u;
-    dist.convertTo(dist_8u, CV_8U);
-
-    // Find total markers
-    std::vector< std::vector< cv::Point> > contours;
-    cv::findContours(dist_8u, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
-
-    //the marker image for the watershed algorithm
-    cv::Mat markers = cv::Mat::zeros(dist.size(), CV_32S);
-
-    // Draw the foreground markers
-    for(size_t i = 0; i < contours.size(); ++i) cv::drawContours(markers, contours, static_cast<int>(i), cv::Scalar(static_cast<int>(i)+1), -1);
-
-    // Draw the background marker
-    cv::circle(markers, cv::Point(5,5), 3, cv::Scalar(255), -1);
-    cv::Mat markers8u;
-    markers.convertTo(markers8u, CV_8U, 10);
-
-    // Perform the watershed algorithm
-    cv::watershed(result, markers);
-
-    cv::Mat mark;
-    markers.convertTo(mark, CV_8U);
-    cv::bitwise_not(mark, mark);
-
-    //Generate random colors
-    std::vector<cv::Vec3b> colors;
-        for (size_t i = 0; i < contours.size(); i++)
-        {
-            int b = cv::theRNG().uniform(0, 256);
-            int g = cv::theRNG().uniform(0, 256);
-            int r = cv::theRNG().uniform(0, 256);
-            colors.push_back(cv::Vec3b((uchar)b, (uchar)g, (uchar)r));
-        }
-
-        //Create the result image
-        cv::Mat dst = cv::Mat::zeros(markers.size(), CV_8UC3);
-
-        //Fill labeled objects with random color
-        for (int i = 0; i < markers.rows; i++)
-            for (int j = 0; j < markers.cols; j++) {
-                int index = markers.at<int>(i,j);
-                if (index > 0 && index <= static_cast<int>(contours.size())) dst.at<cv::Vec3b>(i,j) = colors[index-1];
-            }
-
-    return MatToUIImage(dst);
-    
-//        class WatershedSegmenter{
-//        private:
-//            cv::Mat markers;
-//        public:
-//            void setMarkers(cv::Mat& markerImage){ markerImage.convertTo(markers, CV_32S);}
+   // V1
+//    cv::Mat src;
+//    UIImageToMat(image, src);
+//    cv::cvtColor(src,src,cv::COLOR_RGBA2BGR);
 //
-//            cv::Mat process(cv::Mat &image)
+//        cv::Mat bw;
+//    cv::cvtColor(src, bw, cv::COLOR_BGR2GRAY);
+//    cv::threshold(bw, bw, 35, 255, THRESH_BINARY);
+//
+//    // Perform the distance transform algorithm
+//        cv::Mat dist;
+//    cv::distanceTransform(bw, dist, DIST_L2, DIST_MASK_3);
+//
+//    // Normalize the distance image for range = {0.0, 1.0}
+//        // so we can visualize and threshold it
+//        cv::normalize(dist, dist, 0, 1., cv::NORM_MINMAX);
+//
+//    // Threshold to obtain the peaks
+//        // This will be the markers for the foreground objects
+//    cv::threshold(dist, dist, .5, 1., THRESH_BINARY);
+////        cv::imshow("dist2", dist);
+//
+//    // Create the CV_8U version of the distance image
+//        // It is needed for cv::findContours()
+//        cv::Mat dist_8u;
+//        dist.convertTo(dist_8u, CV_8U);
+//
+//    // Find total markers
+//        std::vector<std::vector<cv::Point> > contours;
+//    cv::findContours(dist_8u, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
+//        int ncomp = contours.size();
+//
+//    // Create the marker image for the watershed algorithm
+//        cv::Mat markers = cv::Mat::zeros(dist.size(), CV_32SC1);
+//
+//    // Draw the foreground markers
+//        for (int i = 0; i < ncomp; i++)
+//            cv::drawContours(markers, contours, i, cv::Scalar::all(i+1), -1);
+//
+//    // Draw the background marker
+//    cv::circle(markers, cv::Point(5,5), 3, CV_RGB(255,255,255), -1);
+////    cv::imshow("markers", markers*10000);
+//
+//    // Generate random colors
+//        std::vector<cv::Vec3b> colors;
+//        for (int i = 0; i < ncomp; i++)
+//        {
+//            int b = cv::theRNG().uniform(0, 255);
+//            int g = cv::theRNG().uniform(0, 255);
+//            int r = cv::theRNG().uniform(0, 255);
+//
+//            colors.push_back(cv::Vec3b((uchar)b, (uchar)g, (uchar)r));
+//        }
+//    // Create the result image
+//        cv::Mat dst = cv::Mat::zeros(markers.size(), CV_8UC3);
+//
+//        // Fill labeled objects with random colors
+//        for (int i = 0; i < markers.rows; i++)
+//        {
+//            for (int j = 0; j < markers.cols; j++)
 //            {
-//                cv::watershed(image, markers);
-//                markers.convertTo(markers,CV_8UC3);
-//                return markers;
+//                int index = markers.at<int>(i,j);
+//                if (index > 0 && index <= ncomp)
+//                    dst.at<cv::Vec3b>(i,j) = colors[index-1];
+//                else
+//                    dst.at<cv::Vec3b>(i,j) = cv::Vec3b(0,0,0);
 //            }
-//        };
+//        }
 //
-//        cv::Mat src;
-//        UIImageToMat(image, src); // convert source src to Mat
-//        cvtColor(src, src, cv::COLOR_BGRA2BGR); // change 4 to 3 channels
-//
-//        cv::Mat blank(src.size(),CV_8U,cv::Scalar(0xFF));
-//        cv::Mat dest;
-//        cv::Mat markers(src.size(),CV_8U,cv::Scalar(-1));
-//
-//        markers(cv::Rect(0,0,src.cols, 5)) = cv::Scalar::all(1);
-//        markers(cv::Rect(0,src.rows-5,src.cols, 5)) = cv::Scalar::all(1);
-//        markers(cv::Rect(0,0,5,src.rows)) = cv::Scalar::all(1);
-//        markers(cv::Rect(src.cols-5,0,5,src.rows)) = cv::Scalar::all(1);
-//
-//        int centreW = src.cols/4;
-//        int centreH = src.rows/4;
-//
-//        markers(cv::Rect((src.cols/2)-(centreW/2),(src.rows/2)-(centreH/2), centreW, centreH)) = cv::Scalar::all(2);
-//        markers.convertTo(markers,cv::COLOR_BGR2GRAY);
-//
-//        WatershedSegmenter segmenter;
-//        segmenter.setMarkers(markers);
-//        cv::Mat wshedMask = segmenter.process(src);
-//        cv::Mat mask;
-//        cv::convertScaleAbs(wshedMask, mask, 1, 0);
-//        cv::threshold(mask, mask, 1, 255, cv::THRESH_BINARY);
-//        cv::bitwise_and(src, src, dest, mask);
-//        dest.convertTo(dest,CV_8U);
-//
-//    return MatToUIImage(dest);
+//    return(MatToUIImage(dst));
     
     
+    
+    
+    //V2
+    cv::Mat src;
+    UIImageToMat(image, src);
+    cv::cvtColor(src,src,cv::COLOR_RGBA2RGB);
+    
+    cv::Mat gray;
+    cv::cvtColor(src, gray, cv::COLOR_RGB2GRAY);
+    
+    cv::Mat thresh;
+    cv::threshold(gray, thresh, 0, 255, cv::THRESH_BINARY_INV+cv::THRESH_OTSU);
+    
+    cv::Mat kernel = cv::Mat::ones(3, 3, CV_8U);
+    cv::Point anchor = cv::Point(-1,-1);
+    
+    cv::Mat open;
+    cv::morphologyEx(thresh, open, cv::MORPH_OPEN, kernel,anchor,2);
+    
+    cv::Mat sure_bg;
+    cv::dilate(open,sure_bg, kernel,anchor,3);
+    
+    cv::Mat dist_trn;
+    cv::distanceTransform(open, dist_trn, cv::DIST_L2, cv::DIST_MASK_3);
+    
+    cv::Mat ret, sure_fg;
+    
+    double maxV;
+    cv::minMaxLoc(dist_trn, 0, &maxV);
+    cv::threshold(dist_trn,sure_fg,0.7*maxV,255,0);
+    sure_fg.convertTo(sure_fg, CV_8UC1);
+    
+    cv::Mat unknown;
+    cv::subtract(sure_bg, sure_fg, unknown);
+    
+    cv::Mat markers;
+    cv::connectedComponents(sure_fg, markers);
+    markers += 1;
+    
+    /*
+     img[markers == -1] = [255,0,0]
+     img.setTo(Scalar(255,0,0), markers==-1);
+     */
+    markers.setTo(cv::Scalar(0), unknown==255);
+    cv::watershed(src,markers);
+    
+    src.setTo(Scalar(255,0,0), markers==-1);
+    
+    return MatToUIImage(src);
 }
-
 
 
 

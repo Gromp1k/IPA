@@ -11,7 +11,8 @@ import PhotosUI
 protocol MainViewControllerDelegate{ func isImageLoaded(_ isLoaded:Bool) }
 
 class MainViewController: UIViewController {
-   
+
+    private var previewImage = UIImage()
     @IBOutlet weak var headerView: UIView!
     @IBOutlet weak var sideMenuBackgroundView: UIView!
     @IBOutlet weak var sideMenuView: UIView!
@@ -36,7 +37,6 @@ class MainViewController: UIViewController {
     }
     @IBAction func hideMenu(_ sender: Any) { self._hideMenu() }
     
-
     var delegate: MainViewControllerDelegate? /// delegate of MainViewContoller
     var sideMenuViewController: SideMenuViewController?
     var kernelDetailsViewController: KernelDetailsViewController?
@@ -45,15 +45,16 @@ class MainViewController: UIViewController {
     
     
     private var isSideMenuPresented:Bool = false
-    private var isBitwisePick = false /// case: callback from SideMenu to perform bitwise - flag if PHPicker updates or not PresentedImage.image
+    private var BITWISE_PICK_FLAG = false /// case: callback from SideMenu to perform bitwise - flag if PHPicker updates or not PresentedImage.image
     ///
-    private var bitwiseOperationType: OperationTypes.ControllerTypes.BitwiseTypes? /// pass callback from SideMenu with Bitwise's kind operation to perform
-    private var blurOperationType: OperationTypes.ControllerTypes.BlurTypes? /// pass callback from SideMenu with Bitwise's kind operation to perform///
+    private var BITWISE_TYPE_FLAG: OperationTypes.ControllerTypes.BitwiseTypes? /// pass callback from SideMenu with Bitwise's kind operation to perform
+    private var BLUR_TYPE_FLAG: OperationTypes.ControllerTypes.BlurTypes? /// pass callback from SideMenu with Bitwise's kind operation to perform///
     
     private var imageModel = ImageModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         self.setupUI()
     }
     
@@ -112,12 +113,14 @@ class MainViewController: UIViewController {
             controller.delegate = self
             switch threshold {
             case .OTSU:
-                controller.inputFlag = .THRESHOLD
+                controller.thresholdCallbackType = .THRESHOLD_OTSU
             case .STANDARD:
-                controller.inputFlag = .THRESHOLD
+                controller.thresholdCallbackType = .THRESHOLD
             case .ADAPTIVE:
-                controller.inputFlag = .THRESHOLD_ADAPTIVE
+                controller.thresholdCallbackType = .THRESHOLD_ADAPTIVE
             }
+            controller.transitioningDelegate = self
+            controller.modalPresentationStyle = .custom
             present(controller,animated: true)
             
                 break
@@ -142,23 +145,25 @@ class MainViewController: UIViewController {
                 guard let controller = storyboard?.instantiateViewController(withIdentifier: "LiveFeedViewController") as? LiveFeedViewController else{ return }
                 present(controller,animated: true)
                 break
+            
             case .KERNEL_VC(let blur):
-                self.blurOperationType = blur
+                self.BLUR_TYPE_FLAG = blur
                 guard let controller = storyboard?.instantiateViewController(withIdentifier: "KernelDetailsViewController") as? KernelDetailsViewController else{ return }
                 controller.transitioningDelegate = self
                 controller.modalPresentationStyle = .custom
                 controller.delegate = self
-                self.kernelDetailsViewController = controller
                 present(controller,animated: true)
                 break
+            
             case .HISTROGRAM_VC:
                 guard let controller = storyboard?.instantiateViewController(withIdentifier: "HistogramViewController") as? HistogramViewController else{ return }
                 controller.data = imageModel.LookupTable
                 present(controller,animated: true)
+            
             case .BITWISE_VC(let bitwiseType):
-            if(imageModel.IsImageLoaded){
-                    self.isBitwisePick = true // true => image from PHPicker won't be set as presentedImage.image
-                    self.bitwiseOperationType = bitwiseType
+            if(imageModel.IMAGE_LOADED_FLAG){
+                    self.BITWISE_PICK_FLAG = true // true => image from PHPicker won't be set as presentedImage.image
+                    self.BITWISE_TYPE_FLAG = bitwiseType
                     if bitwiseType == .NOR { imageModel.Image = OpenCVWrapper.bitwiseNOT(imageModel.Image) }
                     else{
                         var config = PHPickerConfiguration()
@@ -184,7 +189,11 @@ class MainViewController: UIViewController {
         }
     }
     
-    private func updateImage(){
+    private func updatePreviewImage(){
+        self.presentedImage.image =  self.previewImage
+    }
+    
+    private func updateModelImage(){
         self.presentedImage.image =  imageModel.Image
         DispatchQueue.global().async {
             self.imageModel.LookupTable = self.imageModel.Image.getImageLookupTable()
@@ -193,56 +202,83 @@ class MainViewController: UIViewController {
     
     ///Function to handle callback from SideMenuViewController - perform operation
     private func modifyImage(_ modification: OperationTypes.ModificationTypes){
+     
            // guard let image = self.presentedImage.image else {return}
-            if(imageModel.IsImageLoaded){
+            if(imageModel.IMAGE_LOADED_FLAG){
             switch modification{
                 case .SAVE_IMAGE_TO_FILE:
                     let imageSaver = ImageSaver()
                     imageSaver.writeToPhotoAlbum(image:  imageModel.Image)
                     break
                 case .DELETE_PRESENTED_IMAGE:
-                    imageModel.Image = UIImage() //Set "image not presented" graphics
-                    imageModel.IsImageLoaded = false // set flag to false
-                    self.delegate?.isImageLoaded(false) // send state of flag to all listeners via delegate
-                    break
+                    self.presentedImage.image = UIImage(systemName:"square.stack.3d.down.right")!.withTintColor(.indygo)
+                    self.imageModel.Image = UIImage()
+                    self.imageModel.IMAGE_LOADED_FLAG = false
+                break
+                    
                 case .GRAYSCALE:  imageModel.Image = OpenCVWrapper.convertGrayscale( imageModel.Image)
-                    break
+                    
                 case .BINARY:  imageModel.Image = OpenCVWrapper.convertBinary( imageModel.Image)
-                    break
+                    
                 case .NEGATE:  imageModel.Image = OpenCVWrapper.convertNegative( imageModel.Image)
-                    break
+                    
                 case .EQUALIZE:  imageModel.Image = OpenCVWrapper.histEqualization( imageModel.Image)
-                    break
+                   
                 case .ERODE:  imageModel.Image = OpenCVWrapper.morphErode( imageModel.Image)
-                    break
+                    
                 case .DILATE:  imageModel.Image = OpenCVWrapper.morphDilate( imageModel.Image)
-                    break
+                    
                 case .OPEN:  imageModel.Image = OpenCVWrapper.morphOpen( imageModel.Image)
-                    break
+                   
                 case .CLOSE:  imageModel.Image = OpenCVWrapper.morphClose( imageModel.Image)
-                    break
+                    
                 case .SKELETONIZE:  imageModel.Image = OpenCVWrapper.morphSkale( imageModel.Image)
-                    break
+                  
                 case .WATERSHED:   imageModel.Image = OpenCVWrapper.watershed( imageModel.Image)
-                    break
             }
-                self.updateImage()
         }
+        if imageModel.IMAGE_LOADED_FLAG{ self.updateModelImage() }
     }
 }
 
 extension MainViewController : ThresholdDetailsViewControllerDelegate {
-    func thresholdCallback(threshold: Int, type: ThresholdTypeCallback) {
-        if self.imageModel.IsImageLoaded {
+    func cancelOperation() { self.updateModelImage() }
+    
+    func thresholdCallback(threshold: Int, type: ThresholdTypeCallback, isForPreview: Bool) {
+        if self.imageModel.IMAGE_LOADED_FLAG {
             switch type {
-            case .THRESHOLD: imageModel.Image = OpenCVWrapper.thresholding( imageModel.Image, tresholds: Int32(threshold))
-                break
-            case .THRESHOLD_ADAPTIVE: imageModel.Image = OpenCVWrapper.thresholdingAdaptive(imageModel.Image, thresholds: Int32(threshold))
-                break
-            case .THRESHOLD_OTSU: imageModel.Image = OpenCVWrapper.thresholdingOtsu(imageModel.Image, thresholds: Int32(threshold))
-                break
+                case .THRESHOLD:
+                    if isForPreview {
+                        self.previewImage = OpenCVWrapper.thresholding( imageModel.Image, tresholds: Int32(threshold))
+                        self.updatePreviewImage()
+                    }
+                    else{
+                        imageModel.Image = OpenCVWrapper.thresholding( imageModel.Image, tresholds: Int32(threshold))
+                        self.updateModelImage()
+                    }
+                   
+                case .THRESHOLD_ADAPTIVE:
+                    if isForPreview{
+                        self.previewImage = OpenCVWrapper.thresholdingAdaptive(imageModel.Image, thresholds: Int32(threshold))
+                        self.updatePreviewImage()
+                    }
+                    else{
+                        imageModel.Image = OpenCVWrapper.thresholdingAdaptive(imageModel.Image, thresholds: Int32(threshold))
+                        self.updateModelImage()
+                    }
+                    
+                case .THRESHOLD_OTSU:
+                    if isForPreview{
+                        self.previewImage = OpenCVWrapper.thresholdingAdaptive(imageModel.Image, thresholds: Int32(threshold))
+                        self.updatePreviewImage()
+                    }
+                    else{
+                        imageModel.Image = OpenCVWrapper.thresholdingOtsu(imageModel.Image, thresholds: Int32(threshold))
+                        self.updateModelImage()
+                    }
+                
             }
-            self.updateImage()
+            
         }
     }
 }
@@ -278,8 +314,8 @@ extension MainViewController:  PHPickerViewControllerDelegate{
             itemProvider.loadObject(ofClass: UIImage.self){ [weak self] image, error in
                 DispatchQueue.main.async { [self] in
                     guard let self = self, let image = image as? UIImage, self.imageModel.Image == previousImage else {return}
-                    if(self.isBitwisePick){
-                        switch self.bitwiseOperationType{
+                    if(self.BITWISE_PICK_FLAG){
+                        switch self.BITWISE_TYPE_FLAG{
                         case .AND: self.imageModel.Image = OpenCVWrapper.bitwiseAND(self.imageModel.Image, with: image); break
                         case .XOR: self.imageModel.Image = OpenCVWrapper.bitwiseXOR(self.imageModel.Image, with: image); break
                         case .OR: self.imageModel.Image = OpenCVWrapper.bitwiseOR(self.imageModel.Image, with: image); break
@@ -289,12 +325,12 @@ extension MainViewController:  PHPickerViewControllerDelegate{
                     }
                     else{
                         self.imageModel.Image = image
-                        self.imageModel.IsImageLoaded = true
+                        self.imageModel.IMAGE_LOADED_FLAG = true
                         self.delegate?.isImageLoaded(true)
                     }
                     DispatchQueue.global().async {self.imageModel.LookupTable =  self.imageModel.Image.getImageLookupTable() }
                     self.presentedImage.image = self.imageModel.Image
-                    self.isBitwisePick = false // set flag as default
+                    self.BITWISE_PICK_FLAG = false // set flag as default
                 }
             }
         }
@@ -319,29 +355,84 @@ extension MainViewController: SideMenuViewControllerDelegate{
 
 /// Callback from KernelDetailsViewController
 extension MainViewController: KernelDetailsViewControllerDelegate{
-    ///Get Kernel Size +(Border type)? for Blur operations
-    func getKernelDetails(kernel size: Int){
-        if( imageModel.IsImageLoaded){
-            switch self.blurOperationType{
-            case .BLUR:  imageModel.Image = OpenCVWrapper.blur(imageModel.Image, withKernel: Int32(size));break
-                case .CANNY:  imageModel.Image = OpenCVWrapper.blurCanny( imageModel.Image, withKernel: Int32(size));break
-                case .LAPLASSIAN: imageModel.Image = OpenCVWrapper.blurLaplacian( imageModel.Image, withKernel: Int32(size));break
-                case .GAUSSIAN:  imageModel.Image = OpenCVWrapper.blurGaussian(imageModel.Image, withKernel: Int32(size));break
-                case .SOBEL: imageModel.Image = OpenCVWrapper.blurSobel(imageModel.Image, withKernel: Int32(size)) ;break
+    func getKernelDetailsCancel() { self.updateModelImage() }
+    
+    func getKernelDetails(kernel size: Int, isPreview: Bool) {
+        if( imageModel.IMAGE_LOADED_FLAG){
+            switch self.BLUR_TYPE_FLAG{
+                case .BLUR:
+                    if isPreview{
+                        self.previewImage = OpenCVWrapper.blur(imageModel.Image, withKernel: Int32(size))
+                        self.updatePreviewImage()
+                    }
+                    else{
+                        imageModel.Image = OpenCVWrapper.blur(imageModel.Image, withKernel: Int32(size))
+                        self.updateModelImage()
+                    }
+                break
+                
+                case .CANNY:
+                    if isPreview{
+                        self.previewImage = OpenCVWrapper.blurCanny( imageModel.Image, withKernel: Int32(size))
+                        self.updatePreviewImage()
+                    }
+                    else{
+                        imageModel.Image =  OpenCVWrapper.blurCanny( imageModel.Image, withKernel: Int32(size))
+                        self.updateModelImage()
+                    }
+                break
+                
+                case .LAPLASSIAN:
+                    if isPreview{
+                        self.previewImage = OpenCVWrapper.blurLaplacian( imageModel.Image, withKernel: Int32(size))
+                        self.updatePreviewImage()
+                    }
+                    else{
+                        imageModel.Image =  OpenCVWrapper.blurLaplacian( imageModel.Image, withKernel: Int32(size))
+                        self.updateModelImage()
+                    }
+                break
+                
+                case .GAUSSIAN:
+                    if isPreview{
+                        self.previewImage = OpenCVWrapper.blurGaussian(imageModel.Image, withKernel: Int32(size))
+                        self.updatePreviewImage()
+                    }
+                    else{
+                        imageModel.Image =  OpenCVWrapper.blurGaussian(imageModel.Image, withKernel: Int32(size))
+                        self.updateModelImage()
+                    }
+                break
+                
+                case .SOBEL:
+                    if isPreview{
+                        self.previewImage = OpenCVWrapper.blurSobel(imageModel.Image, withKernel: Int32(size))
+                        self.updatePreviewImage()
+                    }
+                    else{
+                        imageModel.Image =  OpenCVWrapper.blurSobel(imageModel.Image, withKernel: Int32(size)) 
+                        self.updateModelImage()
+                    }
+                break
                 default: break
             }
-            self.updateImage()
         }
-       
     }
 }
 
-extension MainViewController:HistogramNormalizeDeteilsViewControllerDelegate{
-    func normalizeCallback(minVal: Int32, maxVal: Int32) {
-        print(minVal, maxVal)
-        if self.imageModel.IsImageLoaded {
-            imageModel.Image = OpenCVWrapper.histNormalize(self.imageModel.Image, min: minVal, max: maxVal)
-            self.updateImage()
+extension MainViewController: HistogramNormalizeDeteilsViewControllerDelegate{
+    func normalizeCallbackCancel(){ self.updateModelImage() }
+    
+    func normalizeCallback(minVal: Int32, maxVal: Int32, isPreview: Bool) {
+        if self.imageModel.IMAGE_LOADED_FLAG {
+            if isPreview {
+                self.previewImage = OpenCVWrapper.histNormalize(self.imageModel.Image, min: minVal, max: maxVal)
+                self.updatePreviewImage()
+            }
+            else {
+                imageModel.Image = OpenCVWrapper.histNormalize(self.imageModel.Image, min: minVal, max: maxVal)
+                self.updateModelImage()
+            }
         }
     }
 }

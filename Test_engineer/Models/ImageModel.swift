@@ -22,7 +22,7 @@ class ImageModel {
         set(newImage){ self.image = newImage }
     }
     
-    public var IsImageLoaded: Bool {
+    public var IMAGE_LOADED_FLAG: Bool {
         get{return self.isImageLoaded}
         set(flag){ self.isImageLoaded = flag}
     }

@@ -10,16 +10,15 @@ import AVFoundation
 // Inherit AVCaptureVideoDataOutputSampleBufferDelegate to implement buffer processing delegate
 class LiveSegmentationViewController: UIViewController {
    
-    
-    private var modifiedView = UIImageView()
+    private var liveView = UIImageView()
     private let captureSession = AVCaptureSession()
     private lazy var previewLayer = AVCaptureVideoPreviewLayer(session: self.captureSession)
     private let videoDataOutput = AVCaptureVideoDataOutput()
     private var faceLayers: [CAShapeLayer] = []
 
     override func viewDidLoad() {
-        modifiedView.frame = self.view.frame
-        self.view.addSubview(self.modifiedView)
+        liveView.frame = self.view.frame
+        self.view.addSubview(self.liveView)
         super.viewDidLoad()
         setupCamera()
         captureSession.startRunning()
@@ -69,7 +68,7 @@ extension LiveSegmentationViewController: AVCaptureVideoDataOutputSampleBufferDe
         let image:UIImage = self.captureImage(sampleBuffer)
         
         DispatchQueue.main.async {
-            self.modifiedView.image = image
+            self.liveView.image = image
         }
     }
     // Create UIImage from sampleBuffer
@@ -91,7 +90,7 @@ extension LiveSegmentationViewController: AVCaptureVideoDataOutputSampleBufferDe
 
         //RGB color space
         let colorSpace: CGColorSpace = CGColorSpaceCreateDeviceRGB()
-        let newContext: CGContext = CGContext(data: baseAddress,                                      width: width, height: height, bitsPerComponent: 8, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: bitmapInfo)!
+        let newContext: CGContext = CGContext(data: baseAddress,  width: width, height: height, bitsPerComponent: 8, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: bitmapInfo)!
         // Quartz Image
         let imageRef: CGImage = newContext.makeImage()!
             

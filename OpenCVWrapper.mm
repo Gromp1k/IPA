@@ -36,7 +36,7 @@
 +(UIImage *) convertNegative:(UIImage *)image{
     cv::Mat img, negate;
     UIImageToMat(image,img);
-    if(img.channels()!=1) cv::cvtColor(img, img, cv::COLOR_BGR2GRAY);
+    cv::cvtColor(img, img, cv::COLOR_RGBA2RGB);
     cv::bitwise_not(img,negate);
     return MatToUIImage(negate);
 }
@@ -97,30 +97,7 @@
     cv::threshold(ret2,ret2,0,255,cv::THRESH_BINARY+cv::THRESH_OTSU);
     return MatToUIImage(ret2);
 }
-///  Watershed  image tresholding
-///
-///  if image format is RGBA it will be change to Grayscale image,  then image is tresholded with treshold value equal `level`
-/// @param image image of type `UIIMage`
-/// @param level value of the treshold
-/// - Returns: image of type UIImage
-+(UIImage *) tresholdingWatershed:(UIImage *)image tresholds:(int)level{
-    cv::Mat ret2, open, bg,unkown, mark;
-    UIImageToMat(image, ret2);
-    cv::cvtColor(ret2, ret2, cv::COLOR_BGR2GRAY);
-    cv::threshold(ret2,ret2,0,255,cv::THRESH_BINARY+cv::THRESH_OTSU);
-    int mask1[3][3] = {{1,1,1},{1,1,1},{1,1,1}};
-    cv::Mat ms1 = cv::Mat(3,3,CV_64F,mask1);
-    cv::morphologyEx(ret2, open, cv::MORPH_OPEN, ms1);
-    cv::dilate(open, open, ms1);
-    bg = cv::Mat(open);
-    cv::distanceTransform(open, open, cv::DIST_L2, 5);
-    double min, max;
-    cv::minMaxLoc(open, &min, &max);
-    cv::threshold(open, open, 0.5 * max,255,0);
-    cv::subtract(bg, open, unkown);
-    cv::connectedComponents(open,open);
-    return MatToUIImage(ret2);
-}
+
 ///  Classic image blur
 ///
 ///  if image format is RGBA it will be change to Grayscale image,
@@ -501,7 +478,7 @@ using namespace std;
     cv::Point anchor = cv::Point(-1,-1);
     
     cv::Mat open;
-    cv::morphologyEx(thresh, open, cv::MORPH_OPEN, kernel,anchor,2);
+    cv::morphologyEx(thresh, open, cv::MORPH_OPEN, kernel,anchor,3);
     
     cv::Mat sure_bg;
     cv::dilate(open,sure_bg, kernel,anchor,3);
@@ -530,7 +507,12 @@ using namespace std;
     markers.setTo(cv::Scalar(0), unknown==255);
     cv::watershed(src,markers);
     
-    src.setTo(Scalar(255,0,0), markers==-1);
+//    int b = cv::theRNG().uniform(0, 255);
+//      int g = cv::theRNG().uniform(0, 255);
+//  int r = cv::theRNG().uniform(0, 255);
+//
+//    src.setTo(cv::Scalar((uchar)b, (uchar)g, (uchar)r), markers==-1);
+    src.setTo(cv::Scalar(0,255,0), markers==-1);
     
     return MatToUIImage(src);
 }

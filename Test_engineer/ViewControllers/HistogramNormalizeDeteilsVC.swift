@@ -6,10 +6,14 @@
 //
 
 import UIKit
-protocol HistogramNormalizeDeteilsViewControllerDelegate{ func normalizeCallback(minVal: Int32, maxVal: Int32 ) }
+protocol HistogramNormalizeDeteilsViewControllerDelegate{
+    func normalizeCallback(minVal: Int32, maxVal: Int32, isPreview:Bool )
+    func normalizeCallbackCancel()
+}
 
 class HistogramNormalizeDeteilsVC: UIViewController {
 
+    private var CANCEL_FLAG: Bool = false
     @IBOutlet weak var sliderMin: UISlider!
     @IBOutlet weak var sliderMax: UISlider!
     
@@ -25,8 +29,15 @@ class HistogramNormalizeDeteilsVC: UIViewController {
         // Do any additional setup after loading the view.
     }
     
+    deinit{
+        if self.CANCEL_FLAG {
+            self.delegate?.normalizeCallbackCancel()
+        }
+    }
+    
     @IBAction func sendAction(_ sender: Any) {
-        delegate?.normalizeCallback(minVal: Int32(sliderMin.value), maxVal: Int32(sliderMax.value))
+        delegate?.normalizeCallback(minVal: Int32(sliderMin.value), maxVal: Int32(sliderMax.value), isPreview: false)
+        self.CANCEL_FLAG = false
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -43,6 +54,8 @@ class HistogramNormalizeDeteilsVC: UIViewController {
     private func updateLabels(){
         self.labelMin.text = String(Int(self.sliderMin.value))
         self.labelMax.text = String(Int(self.sliderMax.value))
+        self.CANCEL_FLAG = true
+        delegate?.normalizeCallback(minVal: Int32(sliderMin.value), maxVal: Int32(sliderMax.value),isPreview: true)
     }
     
     /*

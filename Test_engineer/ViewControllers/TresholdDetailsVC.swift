@@ -12,37 +12,42 @@ enum ThresholdTypeCallback{
 }
 
 protocol ThresholdDetailsViewControllerDelegate {
-    func thresholdCallback(threshold: Int, type: ThresholdTypeCallback)
+    func thresholdCallback(threshold: Int, type: ThresholdTypeCallback, isForPreview: Bool)
+    func cancelOperation()
 }
 
 class ThresholdDetailsViewController: UIViewController {
     
+
+    private var CANCEL_FLAG: Bool = false // flag for presentation controller gesture recognizer if tapped background
+    @IBOutlet weak var btnApply: NeumorphicView!
+    @IBOutlet weak var label: UILabel!
     @IBOutlet weak var slider: UISlider!
-    
-    @IBOutlet weak var btnSend: UIButton!
-    @IBOutlet weak var siderLabel: UILabel!
+    var thresholdCallbackType: ThresholdTypeCallback = .THRESHOLD //default
     var delegate: ThresholdDetailsViewControllerDelegate?
-    var inputFlag: ThresholdTypeCallback = .THRESHOLD
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        let tap = UITapGestureRecognizer(target: self, action: #selector(self.btnTapped(_:)))
+        btnApply.addGestureRecognizer(tap)
         // Do any additional setup after loading the view.
     }
     
-    
-    
-    @IBAction func sendData(_ sender: Any) {
-        delegate?.thresholdCallback(threshold: Int(slider.value), type: self.inputFlag)
+    deinit{
+        if self.CANCEL_FLAG{ self.delegate?.cancelOperation() }
     }
     
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    
+    @objc func btnTapped(_ sender: UITapGestureRecognizer? = nil) {
+        self.delegate?.thresholdCallback(threshold: Int(slider.value), type: self.thresholdCallbackType, isForPreview: false)
+        self.CANCEL_FLAG = false
+        self.dismiss(animated: true, completion: nil)
     }
-    */
-
+    
+  
+    
+    @IBAction func sliderValueChanged(_ sender: Any) {
+        self.delegate?.thresholdCallback(threshold: Int(slider.value), type: self.thresholdCallbackType, isForPreview: true)
+        self.label.text = "Treshold value : \(Int(slider.value))"
+    }
+    
 }
